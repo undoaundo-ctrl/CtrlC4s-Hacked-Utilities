@@ -85,7 +85,7 @@ dependencies {
     compileOnly(libs.lithium) { isTransitive = false }
     compileOnly(libs.iris) { isTransitive = false }
 
-    compileOnly(libs.baritone)
+    modInclude(libs.baritone)
     compileOnly(libs.modmenu)
 
     // Libraries (JAR-in-JAR)

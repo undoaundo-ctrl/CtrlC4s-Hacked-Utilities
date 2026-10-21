@@ -222,7 +222,7 @@ public class BaritonePathManager implements IPathManager {
 
         @Override
         public String displayName0() {
-            return "Meteor Client";
+            return "CtrlC4's Hacked Utilities";
         }
     }
 }

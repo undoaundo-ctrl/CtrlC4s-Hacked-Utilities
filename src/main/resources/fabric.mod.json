@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "name": "Meteor Client",
+  "name": "CtrlC4's Hacked Utilities",
   "id": "meteor-client",
   "version": "${version}",
-  "description": "Based utility mod.",
+  "description": "CtrlC4's Hacked Utilities - built on Meteor Client with Baritone bundled.",
   "authors": [
     "MineGame159",
     "squidoodly",

@@ -1,66 +1,33 @@
-name: Build
-
-concurrency:
-  group: "build"
-  cancel-in-progress: false
+name: Build CtrlC4's Hacked Utilities
 
 on:
   push:
-    branches:
-      - master
+    branches: [master, main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          persist-credentials: false
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v5
-
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '25'
-
-      - name: Set up Node JS
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-
-      - name: Get current build number
-        id: build-number
-        run: |
-          cd .github/builds
-          npm install
-          npm run --silent get_number >> $GITHUB_OUTPUT
-
+      - uses: gradle/actions/setup-gradle@v4
       - name: Build
-        run: ./gradlew build -Pcommit=${{ github.sha }} -Pbuild_number=${{ steps.build-number.outputs.number }}
-
-      - name: Webhook Failure
-        if: ${{ failure() }}
-        run: |
-          cd .github/builds
-          npm run webhook -- ${{ steps.build-number.outputs.number }} ${{ github.ref_name }} https://api.github.com/repos/MeteorDevelopment/meteor-client/compare/${{ github.event.before }}...${{ github.event.after }} false
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-
-      - name: Publish
-        run: ./gradlew publish -Pcommit=${{ github.sha }} -Pbuild_number=${{ steps.build-number.outputs.number }}
-        env:
-          MAVEN_METEOR_ALIAS: ${{ secrets.MAVEN_METEOR_ALIAS }}
-          MAVEN_METEOR_TOKEN: ${{ secrets.MAVEN_METEOR_TOKEN }}
-
-      - name: Discord webhook
-        run: |
-          cd .github/builds
-          npm run webhook -- ${{ steps.build-number.outputs.number }} ${{ github.ref_name }} https://api.github.com/repos/MeteorDevelopment/meteor-client/compare/${{ github.event.before }}...${{ github.event.after }} true
-        env:
-          SERVER_TOKEN: ${{ secrets.SERVER_TOKEN }}
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: ./gradlew build -Pbuild_number=${{ github.run_number }}
+      - name: Upload jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: CtrlC4s-Hacked-Utilities
+          path: build/libs/*.jar
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: CtrlC4's Hacked Utilities build ${{ github.run_number }}
+          files: build/libs/CtrlC4s-Hacked-Utilities-*[0-9].jar
